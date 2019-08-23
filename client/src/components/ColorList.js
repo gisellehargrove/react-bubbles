@@ -8,9 +8,29 @@ const initialColor = {
 };
 
 const ColorList = ({ colors, updateColors }) => {
-  console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+
+  const formatColors = (colorsArr, updatedColor, boolean) => {
+    let newColorsArr = [];
+
+    if(boolean) {
+      newColorsArr = colorsArr.filter(color => {
+        if(color.id !== updatedColor.id) return color;
+      })
+    } else {
+      newColorsArr = colorsArr.map(color => {
+        if(color.id === updatedColor.id) {
+          color = updatedColor
+          return color;
+        } else {
+          return color;
+        }
+      });
+    }
+
+    updateColors(newColorsArr);
+  };
 
   const editColor = color => {
     setEditing(true);
@@ -24,18 +44,17 @@ const ColorList = ({ colors, updateColors }) => {
     // where is is saved right now?
     axiosWithAuth()
     .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, JSON.stringify(colorToEdit))
-    .then(response => {
-      console.log(response.data, 'put request');
-    })
+    .then(response => formatColors(colors, response.data))
     .catch(err => console.log(err))
   };
 
   const deleteColor = color => {
+    console.log(color)
     // make a delete request to delete this color
     axiosWithAuth()
     .delete(`http://localhost:5000/api/colors/${color.id}`)
     .then(response => {
-      console.log(response,'delete request')
+      formatColors(colors, color, true);
     })
     .catch(err => console.log(err))
   };
