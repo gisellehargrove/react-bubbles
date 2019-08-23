@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 
-const Login = () => {
+const Login = props => {
   const [creds, setCreds] = useState({
     username: 'Lambda School',
     password: 'i<3Lambd4'
@@ -22,8 +22,8 @@ const Login = () => {
     axiosWithAuth()
     .post('http://localhost:5000/api/login', creds)
     .then(response => {
-      console.log(response);
       localStorage.setItem('userToken', response.data.payload);
+      props.history.push('/bubblePage');
     })
     .catch(err => {
       console.log(err);
