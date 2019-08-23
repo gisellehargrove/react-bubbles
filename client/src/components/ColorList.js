@@ -10,11 +10,12 @@ const initialColor = {
 const ColorList = ({ colors, updateColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+  const [colorToCreate, setColorToCreate] = useState(initialColor);
 
-  const formatColors = (colorsArr, updatedColor, boolean) => {
+  const formatColors = (colorsArr, updatedColor, type) => {
     let newColorsArr = [];
 
-    if(boolean) {
+    if(type === 'delete') {
       newColorsArr = colorsArr.filter(color => {
         if(color.id !== updatedColor.id) return color;
       })
@@ -55,6 +56,17 @@ const ColorList = ({ colors, updateColors }) => {
     .delete(`http://localhost:5000/api/colors/${color.id}`)
     .then(response => {
       formatColors(colors, color, true);
+    })
+    .catch(err => console.log(err))
+  };
+
+  const createColor = e => {
+    e.preventDefault();
+
+    axiosWithAuth()
+    .post('http://localhost:5000/api/colors', JSON.stringify(colorToCreate))
+    .then(response => {
+      updateColors(response.data);
     })
     .catch(err => console.log(err))
   };
@@ -110,6 +122,30 @@ const ColorList = ({ colors, updateColors }) => {
       )}
       <div className="spacer" />
       {/* stretch - build another form here to add a color */}
+      <form onSubmit={e => createColor(e)}>
+        <label>
+          Color Name:
+          <input onChange={e =>
+            setColorToCreate({ ...colorToCreate, color: e.target.value })
+          }
+          value={colorToCreate.color}
+          />
+        </label>
+        <label>
+          Hex Code:
+          <input onChange={e =>
+              setColorToCreate({
+                ...colorToCreate,
+                code: { hex: e.target.value }
+              })
+            }
+            value={colorToCreate.code.hex}
+            />
+        </label>
+        <button>Save New Color</button>
+      </form>
+
+
     </div>
   );
 };
