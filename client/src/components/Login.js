@@ -4,19 +4,30 @@ import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const Login = () => {
   const [creds, setCreds] = useState({
-    username: '',
-    password: ''
+    username: 'Lambda School',
+    password: 'i<3Lambd4'
   });
 
 
   const handleChange = e => {
-    setCreds({
-      ...creds,
-      [e.target.name]: e.target.value
-    });
+    // setCreds({
+    //   ...creds,
+    //   [e.target.name]: e.target.value
+    // });
   };
 
   const handleSubmit = e => {
+    e.preventDefault();
+
+    axiosWithAuth()
+    .post('http://localhost:5000/api/login', creds)
+    .then(response => {
+      console.log(response);
+      localStorage.setItem('userToken', response.data.payload);
+    })
+    .catch(err => {
+      console.log(err);
+    })
 
   };
 
